@@ -11,6 +11,7 @@ bool repl(void){
 	string line;
 	cout<<formatString(varstore.get("kaash_prompt"))<<flush;
 	getline(cin,line);
+	if(!cin)return false;
 	cout<<line<<endl;
 	return true;
 }
