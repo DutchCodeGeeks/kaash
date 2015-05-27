@@ -3,36 +3,36 @@
 
 using namespace std;
 
-extern const char *const *const environ; //set by the system - magic, $ man environ
+extern const char *const *const environ; //set in the c library - magic; $ man environ
 
-VariableStore varstore; //use with extern!
+VariableStore varstore; //for use with `extern`
 
 VariableStore::VariableStore(void):
 	electricVars({
-			{string("DATE"),[](void){
-				time_t tim=time(NULL);
-				struct tm *timeinfo=localtime(&tim);
-				char buf[64];
-				strftime(buf,63,"%D",timeinfo);
-				return string(buf);
-			}},
-			{string("TIME"),[](void){
-				time_t tim=time(NULL);
-				struct tm *timeinfo=localtime(&tim);
-				char buf[64];
-				strftime(buf,63,"%T",timeinfo);
-				return string(buf);
-			}},
-			{string("PWD"),[](void){
-				char *buf=getcwd(NULL,0);
-				string s=buf;
-				free(buf);
-				return s;
-			}},
-			{string("KAASH"),[](void){
-				return "kaas.";
-			}}
-		}){
+		{string("DATE"),[](void){
+			time_t tim=time(NULL);
+			struct tm *timeinfo=localtime(&tim);
+			char buf[64];
+			strftime(buf,63,"%D",timeinfo);
+			return string(buf);
+		}},
+		{string("TIME"),[](void){
+			time_t tim=time(NULL);
+			struct tm *timeinfo=localtime(&tim);
+			char buf[64];
+			strftime(buf,63,"%T",timeinfo);
+			return string(buf);
+		}},
+		{string("PWD"),[](void){
+			char *buf=getcwd(NULL,0);
+			string s=buf;
+			free(buf);
+			return s;
+		}},
+		{string("KAASH"),[](void){
+			return "kaas.";
+		}}
+	}){
 	const char *envvar=*environ;
 	const char *found;
 	int i;
