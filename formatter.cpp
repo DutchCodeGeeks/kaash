@@ -7,22 +7,44 @@ using namespace std;
 
 extern VariableStore varstore;
 
+pair<char,int> backslashChar(const string &s,int start){
+	char d1,d2;
+	switch(s[start]){
+		case '$':return {'$',1};break;
+		case '0':return {'\0',1};break;
+		case 'n':return {'\n',1};break;
+		case 't':return {'\t',1};break;
+		case 'r':return {'\r',1};break;
+		case 'b':return {'\b',1};break;
+		case 'v':return {'\v',1};break;
+		case 'f':return {'\f',1};break;
+		case 'x':
+			if(s.size()-start<2)return {'\0',1};
+			d1=s[start+1];
+			if(d1>='a')d1=d1-'a'+10;
+			else if(d1>='A')d1=d1-'A'+10;
+			else if(d1>='0')d1=d1-'0';
+			else d1=0;
+			d2=s[start+2];
+			if(d2>='a')d2=d2-'a'+10;
+			else if(d2>='A')d2=d2-'A'+10;
+			else if(d2>='0')d2=d2-'0';
+			else d2=0;
+			return {16*d1+d2,3};
+		default:return {s[start],1};break;
+	}
+}
+
 string formatString(string subj){
 	stringstream ss;
 	int i,j,length=subj.size();
+	pair<char,int> bsResult;
 	for(i=0;i<length;i++){
 		const char c=subj[i];
 		if(c=='\\'){
-			switch(subj[i+1]){
-				case '$':ss<<'$';break;
-				case 'n':ss<<'\n';break;
-				case 't':ss<<'\t';break;
-				case 'r':ss<<'\r';break;
-				case 'b':ss<<'\b';break;
-				case 'v':ss<<'\v';break;
-				default:ss<<subj[i+1];break;
-			}
-			i++;
+			bsResult=backslashChar(subj,i+1);
+			ss<<bsResult.first;
+			i+=bsResult.second;
 			continue;
 		}
 		if(c!='$'){
