@@ -1,9 +1,10 @@
-CXXFLAGS_BASE = -Wall -std=c++11 -lreadline
+CXXFLAGS_BASE = -Wall -std=c++11
 ifdef DEBUG
 	CXXFLAGS = $(CXXFLAGS_BASE) -g
 else
 	CXXFLAGS = $(CXXFLAGS_BASE) -O2
 endif
+LDFLAGS = -lreadline
 CXX = g++
 
 BINARIES = kaash
@@ -21,7 +22,7 @@ clean:
 remake: clean all
 
 kaash: $(OBJ_FILES)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJ_FILES)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ_FILES)
 ifndef DEBUG
 	strip $@
 endif
