@@ -1,4 +1,4 @@
-CXXFLAGS_BASE = -Wall -std=c++11
+CXXFLAGS_BASE = -Wall -std=c++11 -lreadline
 ifdef DEBUG
 	CXXFLAGS = $(CXXFLAGS_BASE) -g
 else
