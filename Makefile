@@ -4,7 +4,7 @@ ifdef DEBUG
 else
 	CXXFLAGS = $(CXXFLAGS_BASE) -O2
 endif
-LDFLAGS = -L/usr/local/Cellar/readline/6.3.8/lib -lreadline
+LDFLAGS = -L/usr/local/opt/readline/lib -lreadline
 CXX = g++
 
 BINARIES = kaash
