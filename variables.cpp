@@ -41,15 +41,22 @@ VariableStore::VariableStore(void):
 		if(!found)continue; //no '=' in the line, wtf?
 		store(string(envvar,(int)(found-envvar)),string(found+1));
 	}
+
+	store("~", [this] (void) { // Dynamic 'alias' to `~`.
+		return get("HOME");
+	});
 }
 
 string VariableStore::get(string name){
-	map<string,function<string(void)>>::const_iterator elec_it=electricVars.find(name);
-	if(elec_it!=electricVars.cend())return elec_it->second();
+	auto elec_it = electricVars.find(name);
+	if (elec_it != electricVars.cend()) return elec_it->second();
 
-	unordered_map<string,string>::const_iterator vars_it=variables.find(name);
-	if(vars_it==variables.cend())return "";
-	return vars_it->second;
+	auto vars_it = variables.find(name);
+	if (vars_it != variables.cend()) {
+		return vars_it->second;
+	}
+
+	return "";
 }
 
 bool VariableStore::exists(string name){
@@ -57,13 +64,16 @@ bool VariableStore::exists(string name){
 	return it!=variables.cend();
 }
 
-void VariableStore::store(string name,string val){
+void VariableStore::store(const string &name, const string &val){
 	if(currentScope&&currentScope->find(name)==currentScope->end()){
 		currentScope->insert(name);
 	}
 	variables[name]=val;
 }
 
+void VariableStore::store(const string &name, function<string(void)> func) {
+	electricVars.emplace(name, func);
+}
 
 void VariableStore::enterScope(void){
 	scopes.emplace_back();

@@ -1,9 +1,11 @@
-#include <iostream>
 #include <cstdlib>
-#include <readline/readline.h>
+#include <iostream>
 #include <readline/history.h>
+#include <readline/readline.h>
 #include "formatter.h"
 #include "variables.h"
+#include "builtins.h"
+#include "util.h"
 
 using namespace std;
 
@@ -33,8 +35,15 @@ bool repl(void){
 	add_history(stripped);
 	string line=stripped;
 	free(c_line);
-	cout<<line<<endl;
-	if(line=="exit")return false;
+
+	vector<string> splitted = split(line, ' ');
+	vector<string> args;
+	for (auto it = splitted.begin() + 1; it != splitted.end(); ++it) {
+		args.push_back(*it);
+	}
+
+	callAndPrintFunction(splitted[0], args);
+
 	return true;
 }
 
@@ -42,7 +51,7 @@ bool repl(void){
 int main(void){
 	rl_bind_key('\t', rl_complete);
 
-	rl_set_signals();
+	// rl_set_signals();
 
 	varstore.store("kaash_prompt","${TIME} ${PWD}\\$ ");
 	while(repl());

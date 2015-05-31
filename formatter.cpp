@@ -1,7 +1,4 @@
-#include <sstream>
 #include "formatter.h"
-#include "util.h"
-#include "variables.h"
 
 using namespace std;
 
