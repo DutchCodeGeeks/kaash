@@ -3,7 +3,7 @@
 
 using namespace std;
 
-extern const char *const *const environ; //set in the c library - magic; $ man environ
+extern char **environ; //set in the c library - magic; $ man environ
 
 VariableStore varstore; //for use with `extern`
 
