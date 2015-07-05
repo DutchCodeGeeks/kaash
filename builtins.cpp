@@ -35,6 +35,26 @@ unordered_map<string, function<string(vector<string>)>> builtins = {
 			return joinVector(args, " ");
 		}
 	}},
+	{ string("ls"), [] (vector<string> args) {
+		string loc;
+		stringstream ss;
+
+		if (args.size() == 0) {
+			loc = ".";
+		} else {
+			loc = args[0];
+		}
+
+		auto dir = readDir(loc);
+		for (unsigned int i = 0; i < dir.size(); i++) {
+			auto entry = dir[i];
+
+			if (i != 0) ss << endl;
+			ss << entry.name;
+		}
+
+		return ss.str();
+	}},
 };
 
 void callAndPrintFunction(const string &funcName, const vector<string> args) {

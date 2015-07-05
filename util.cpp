@@ -54,3 +54,18 @@ string joinVector(const vector<string> &vect, const string &seperator) {
 string joinVector(const vector<string> &vect, char seperator) {
 	return joinVector(vect, string(1, seperator));
 }
+
+vector<dirEntry> readDir(const string &dirname) {
+	vector<dirEntry> result;
+	auto dir = opendir(dirname.c_str());
+	dirent *item = readdir(dir);
+	while (item != NULL) {
+		dirEntry entry;
+		entry.name = string(item->d_name);
+		entry.type = static_cast<dirEntryType>(item->d_type);
+		result.push_back(entry);
+
+		item = readdir(dir);
+	}
+	return result;
+}
