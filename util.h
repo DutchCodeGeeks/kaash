@@ -21,7 +21,7 @@ string joinVector(const vector<string> &vect, const string &seperator);
 string joinVector(const vector<string> &vect, char seperator);
 
 enum dirEntryType {
-	UNKNOWN,
+	UNKNOWN=0,
 	FIFO=1,
 	CHR=2,
 	DIRECTORY=4,
