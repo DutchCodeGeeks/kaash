@@ -6,12 +6,6 @@ void throw_error(string s){
 	throw "Error: "+s;
 }
 
-string cstr_to_str(char *c_str) {
-	string str = c_str;
-	free(c_str);
-	return string(str);
-}
-
 vector<string> split(const string &s, const char delim, int numsplits) {
 	string::size_type cursor = 0;
 	string::size_type idx = s.find(delim);
