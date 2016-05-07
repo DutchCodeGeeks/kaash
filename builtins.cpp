@@ -61,12 +61,14 @@ unordered_map<string, function<string(vector<string>)>> builtins = {
 	}},
 };
 
-void callAndPrintFunction(const string &funcName, const vector<string> args) {
+bool callAndPrintFunction(const string &funcName, const vector<string> args) {
 	auto func_it = builtins.find(funcName);
 	if (func_it != builtins.end()) {
 		string res = func_it->second(args);
 		if (res.size() > 0) {
 			cout << res << endl;
 		}
+		return true;
 	}
+	return false;
 }

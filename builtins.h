@@ -9,4 +9,4 @@
 #include "variables.h"
 #include "util.h"
 
-void callAndPrintFunction(const string&, const vector<string>);
+bool callAndPrintFunction(const string&, const vector<string>);

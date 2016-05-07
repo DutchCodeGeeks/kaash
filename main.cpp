@@ -1,8 +1,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <numeric>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include "formatter.h"
 #include "variables.h"
 #include "builtins.h"
@@ -43,7 +46,29 @@ bool repl(void){
 		args.push_back(*it);
 	}
 
-	callAndPrintFunction(splitted[0], args);
+	if (!callAndPrintFunction(splitted[0], args)) {
+		pid_t pid = fork();
+		if (pid == -1) {
+			throw_error("can't fork");
+		} else if (pid == 0) {
+			char *cargs[args.size() + 2];
+			cargs[0] = (char*) splitted[0].c_str();
+			cargs[args.size() + 1] ='\0';
+
+			accumulate(args.begin(), args.end(), cargs + 1, [](char **cargs, const string &arg) {
+				*cargs = (char*) arg.c_str();
+				return cargs + 1;
+			});
+
+			execvp(splitted[0].c_str(), cargs);
+		} else {
+			int status = waitpid(pid, NULL, 0);
+			if (WIFEXITED(status)) {
+				int exitcode = WEXITSTATUS(status);
+				// TODO: do something with the exit code
+			}
+		}
+	}
 
 	return true;
 }
