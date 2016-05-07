@@ -49,9 +49,10 @@ string joinVector(const vector<string> &vect, char seperator) {
 	return joinVector(vect, string(1, seperator));
 }
 
-vector<dirEntry> readDir(const string &dirname) {
+Maybe<vector<dirEntry>> readDir(const string &dirname) {
 	vector<dirEntry> result;
-	auto dir = opendir(dirname.c_str());
+	DIR *dir = opendir(dirname.c_str());
+	if (dir == NULL) return Nothing();
 	dirent *item = readdir(dir);
 	while (item != NULL) {
 		dirEntry entry;

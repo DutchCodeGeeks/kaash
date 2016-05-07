@@ -45,9 +45,13 @@ unordered_map<string, function<string(vector<string>)>> builtins = {
 			loc = args[0];
 		}
 
-		auto dir = readDir(loc);
+		Maybe<vector<dirEntry>> mdir = readDir(loc);
+		if (mdir.isNothing()) {
+			return args[0];
+		}
+		const vector<dirEntry> &dir = mdir.fromJust();
 		for (unsigned int i = 0; i < dir.size(); i++) {
-			auto entry = dir[i];
+			const dirEntry &entry = dir[i];
 
 			if (i != 0) ss << endl;
 			ss << entry.name;

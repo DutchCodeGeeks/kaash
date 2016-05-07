@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 #include <dirent.h>
+#include "maybe.h"
 
 using namespace std;
 
@@ -35,4 +36,4 @@ struct dirEntry {
 	string name;
 };
 
-vector<dirEntry> readDir(const string &dirname);
+Maybe<vector<dirEntry>> readDir(const string &dirname);
