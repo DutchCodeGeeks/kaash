@@ -53,7 +53,7 @@ bool repl(void){
 		} else if (pid == 0) {
 			char *cargs[args.size() + 2];
 			cargs[0] = (char*) splitted[0].c_str();
-			cargs[args.size() + 1] ='\0';
+			cargs[args.size() + 1] = NULL;
 
 			accumulate(args.begin(), args.end(), cargs + 1, [](char **cargs, const string &arg) {
 				*cargs = (char*) arg.c_str();
