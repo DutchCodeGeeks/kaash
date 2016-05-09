@@ -4,7 +4,7 @@ using namespace std;
 extern VariableStore varstore;
 
 unordered_map<string, function<int(vector<string>)>> builtins = {
-	{ string("cd"), [] (vector<string> args) {
+	{ string("cd"), [] (vector<string> args) -> int {
 		string loc;
 
 		if (args.size() == 0 || args[0] == "~") {
@@ -16,16 +16,15 @@ unordered_map<string, function<int(vector<string>)>> builtins = {
 		chdir(loc.c_str());
 		return 0;
 	}},
-	{ string("exit"), [] (vector<string> args) {
+	{ string("exit"), [] (vector<string> args) -> int {
 		int exitCode = 0;
 		if ((int)args.size() > 0) {
 			exitCode = stoi(args[0]);
 		}
 
 		exit(exitCode);
-		return 0;
 	}},
-	{ string("alias"), [] (vector<string> args) {
+	{ string("alias"), [] (vector<string> args) -> int {
 		if (args.size() != 2) {
 			cerr << "expected 2 arguments" << endl;
 			return 1;
