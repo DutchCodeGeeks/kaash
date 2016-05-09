@@ -10,11 +10,11 @@
 #include "variables.h"
 #include "builtins.h"
 #include "util.h"
+#include "maybe.h"
 
 using namespace std;
 
 extern VariableStore varstore;
-
 
 //puts '\0' after last non-whitespace, returns pointer to first non-whitespace
 //doesn't do any reallocating, `free` still works normally, obviously
@@ -29,6 +29,31 @@ char* stripCstringInPlace(char *s){
 	return start;
 }
 
+Maybe<pid_t> callExpression(string name, vector<string> args) {
+	if (!callAndPrintFunction(name, args)) {
+		pid_t pid = fork();
+		if (pid == -1) {
+			throw_error("can't fork");
+		} else if (pid == 0) {
+			char *cargs[args.size() + 2];
+			cargs[0] = (char*) name.c_str();
+			cargs[args.size() + 1] = NULL;
+
+			accumulate(args.begin(), args.end(), cargs + 1, [](char **cargs, const string &arg) {
+				*cargs = (char*) arg.c_str();
+				return cargs + 1;
+			});
+
+			execvp(name.c_str(), cargs);
+		} else {
+			int status = waitpid(pid, NULL, 0);
+			if (WIFEXITED(status)) {
+				return WEXITSTATUS(status);
+			}
+		}
+	}
+	return Nothing();
+}
 
 bool repl(void){
 	char *c_line=readline(formatString(varstore.get("kaash_prompt")).c_str());
@@ -46,33 +71,10 @@ bool repl(void){
 		args.push_back(*it);
 	}
 
-	if (!callAndPrintFunction(splitted[0], args)) {
-		pid_t pid = fork();
-		if (pid == -1) {
-			throw_error("can't fork");
-		} else if (pid == 0) {
-			char *cargs[args.size() + 2];
-			cargs[0] = (char*) splitted[0].c_str();
-			cargs[args.size() + 1] = NULL;
-
-			accumulate(args.begin(), args.end(), cargs + 1, [](char **cargs, const string &arg) {
-				*cargs = (char*) arg.c_str();
-				return cargs + 1;
-			});
-
-			execvp(splitted[0].c_str(), cargs);
-		} else {
-			int status = waitpid(pid, NULL, 0);
-			if (WIFEXITED(status)) {
-				int exitcode = WEXITSTATUS(status);
-				// TODO: do something with the exit code
-			}
-		}
-	}
+	callExpression(splitted[0], args);
 
 	return true;
 }
-
 
 int main(void){
 	rl_bind_key('\t', rl_complete);
