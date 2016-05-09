@@ -29,6 +29,7 @@ char* stripCstringInPlace(char *s){
 	return start;
 }
 
+// TODO: create a functioncall (or something) type and return it from here.
 Maybe<pid_t> callExpression(string name, vector<string> args) {
 	if (callAndPrintFunction(name, args).isNothing()) {
 		pid_t pid = fork();
