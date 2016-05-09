@@ -30,7 +30,7 @@ char* stripCstringInPlace(char *s){
 }
 
 Maybe<pid_t> callExpression(string name, vector<string> args) {
-	if (!callAndPrintFunction(name, args)) {
+	if (callAndPrintFunction(name, args).isNothing()) {
 		pid_t pid = fork();
 		if (pid == -1) {
 			throw_error("can't fork");

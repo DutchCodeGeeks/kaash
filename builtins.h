@@ -8,5 +8,6 @@
 #include <iostream>
 #include "variables.h"
 #include "util.h"
+#include "maybe.h"
 
-bool callAndPrintFunction(const string&, const vector<string>);
+Maybe<int> callAndPrintFunction(const string&, const vector<string>);

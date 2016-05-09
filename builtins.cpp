@@ -3,7 +3,7 @@
 using namespace std;
 extern VariableStore varstore;
 
-unordered_map<string, function<string(vector<string>)>> builtins = {
+unordered_map<string, function<int(vector<string>)>> builtins = {
 	{ string("cd"), [] (vector<string> args) {
 		string loc;
 
@@ -14,7 +14,7 @@ unordered_map<string, function<string(vector<string>)>> builtins = {
 		}
 
 		chdir(loc.c_str());
-		return string("");
+		return 0;
 	}},
 	{ string("exit"), [] (vector<string> args) {
 		int exitCode = 0;
@@ -23,27 +23,24 @@ unordered_map<string, function<string(vector<string>)>> builtins = {
 		}
 
 		exit(exitCode);
-		return "";
+		return 0;
 	}},
 	{ string("alias"), [] (vector<string> args) {
 		if (args.size() != 2) {
-			return string("expected 2 arguments");
+			cerr << "expected 2 arguments" << endl;
+			return 1;
 		}
 		string name = args[0];
 		string def = args[1];
 
-		return string("");
+		return 0;
 	}},
 };
 
-bool callAndPrintFunction(const string &funcName, const vector<string> args) {
+Maybe<int> callAndPrintFunction(const string &funcName, const vector<string> args) {
 	auto func_it = builtins.find(funcName);
 	if (func_it != builtins.end()) {
-		string res = func_it->second(args);
-		if (res.size() > 0) {
-			cout << res << endl;
-		}
-		return true;
+		return func_it->second(args);
 	}
-	return false;
+	return Nothing();
 }
