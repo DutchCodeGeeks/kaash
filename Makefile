@@ -5,6 +5,7 @@ else
 	CXXFLAGS = $(CXXFLAGS_BASE) -O2
 endif
 LDFLAGS = -L/usr/local/opt/readline/lib -lreadline
+CPPFLAGS = -I/usr/local/opt/readline/include
 CXX = g++
 
 BINARIES = kaash
@@ -22,7 +23,7 @@ clean:
 remake: clean all
 
 kaash: $(OBJ_FILES)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ_FILES)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(CPPFLAGS) -o $@ $(OBJ_FILES)
 ifndef DEBUG
 	strip $@
 endif

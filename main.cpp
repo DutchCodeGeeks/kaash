@@ -79,8 +79,7 @@ bool repl(void){
 
 int main(void){
 	rl_bind_key('\t', rl_complete);
-
-	// rl_set_signals();
+	rl_set_signals();
 
 	varstore.store("kaash_prompt","${TIME} ${PWD}\\$ ");
 	while(repl());
