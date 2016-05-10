@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <errno.h>
 #include <cstring>
 #include <iostream>
 #include <numeric>
@@ -29,8 +30,7 @@ char* stripCstringInPlace(char *s){
 	return start;
 }
 
-// TODO: create a functioncall (or something) type and return it from here.
-Maybe<pid_t> callExpression(string name, vector<string> args) {
+Maybe<int> callCommandSync(string name, vector<string> args) { // -> exitcode
 	if (callAndPrintFunction(name, args).isNothing()) {
 		pid_t pid = fork();
 		if (pid == -1) {
@@ -38,14 +38,22 @@ Maybe<pid_t> callExpression(string name, vector<string> args) {
 		} else if (pid == 0) {
 			char *cargs[args.size() + 2];
 			cargs[0] = (char*) name.c_str();
-			cargs[args.size() + 1] = NULL;
 
+			// put all the arguments from the `args` vector in the `cargs` array
 			accumulate(args.begin(), args.end(), cargs + 1, [](char **cargs, const string &arg) {
 				*cargs = (char*) arg.c_str();
 				return cargs + 1;
 			});
 
+			cargs[args.size() + 1] = NULL;
+
 			execvp(name.c_str(), cargs);
+
+			if (errno == ENOENT) {
+				throw_error("Command '" + name + "' not found");
+			} else if (errno == EACCES) {
+				throw_error("'" + name + "' not executable");
+			}
 		} else {
 			int status = waitpid(pid, NULL, 0);
 			if (WIFEXITED(status)) {
@@ -72,7 +80,12 @@ bool repl(void){
 		args.push_back(*it);
 	}
 
-	callExpression(splitted[0], args);
+	try {
+		callCommandSync(splitted[0], args);
+	} catch (string err) {
+		cerr << err << endl;
+	}
+
 
 	return true;
 }
