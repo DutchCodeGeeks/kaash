@@ -1,11 +1,10 @@
-CXXFLAGS_BASE = -Wall -std=c++11
+CXXFLAGS = -Wall -std=c++11 -I/usr/local/opt/readline/include
 ifdef DEBUG
-	CXXFLAGS = $(CXXFLAGS_BASE) -g
+	CXXFLAGS += -g
 else
-	CXXFLAGS = $(CXXFLAGS_BASE) -O2
+	CXXFLAGS += -O2
 endif
 LDFLAGS = -L/usr/local/opt/readline/lib -lreadline
-CPPFLAGS = -I/usr/local/opt/readline/include
 CXX = g++
 
 BINARIES = kaash
@@ -23,7 +22,7 @@ clean:
 remake: clean all
 
 kaash: $(OBJ_FILES)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(CPPFLAGS) -o $@ $(OBJ_FILES)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ_FILES)
 ifndef DEBUG
 	strip $@
 endif
