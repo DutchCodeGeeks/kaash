@@ -6,6 +6,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <unistd.h>
+#include <sys/select.h>
 #include <sys/wait.h>
 #include "formatter.h"
 #include "variables.h"
@@ -31,6 +32,11 @@ char* stripCstringInPlace(char *s){
 }
 
 Maybe<int> callCommandSync(string name, vector<string> args) { // -> exitcode
+	int pipefd[2];
+	if (pipe(pipefd) == -1) {
+		throw_error("error calling pipe(2)");
+	}
+
 	if (callAndPrintFunction(name, args).isNothing()) {
 		pid_t pid = fork();
 		if (pid == -1) {
@@ -49,15 +55,35 @@ Maybe<int> callCommandSync(string name, vector<string> args) { // -> exitcode
 
 			execvp(name.c_str(), cargs);
 
-			if (errno == ENOENT) {
-				throw_error("Command '" + name + "' not found");
-			} else if (errno == EACCES) {
-				throw_error("'" + name + "' not executable");
-			}
+			int er = errno;
+			write(pipefd[1], &er, sizeof(int));
+			exit(0);
 		} else {
-			int status = waitpid(pid, NULL, 0);
-			if (WIFEXITED(status)) {
+			int status;
+			while (true) {
+				waitpid(pid, &status, 0);
+				if (WIFEXITED(status)) {
+					break;
+				}
+			}
+
+			fd_set rdset;
+			FD_ZERO(&rdset);
+			FD_SET(pipefd[0], &rdset);
+			struct timeval timeout = {.tv_sec = 0, .tv_usec = 0};
+			int ret = select(pipefd[0] + 1, &rdset, NULL, NULL, &timeout);
+			if (ret < 0) {
+				throw_error("error calling select(2)");
+			} else if (ret == 0) {
 				return WEXITSTATUS(status);
+			} else {
+				int er;
+				read(pipefd[0], &er, sizeof(int));
+				if (er == ENOENT) {
+					throw_error("Command '" + name + "' not found");
+				} else if (er == EACCES) {
+					throw_error("'" + name + "' not executable");
+				}
 			}
 		}
 	}
