@@ -132,7 +132,7 @@ public:
 	}
 
 	bool advance(){
-		static const char *special="|><";
+		static const char *special="|";
 
 		index=nextat;
 
@@ -393,8 +393,8 @@ Call parseCall(const vector<string> &tokens){
 				redir.type=Redirect::Type::fd;
 				try {
 					size_t len;
-					redir.fdval=stoi(token.substr(subjectidx),&len);
-					if(token.size()!=subjectidx+len){
+					redir.fdval=stoi(token.substr(subjectidx+1),&len);
+					if(token.size()!=subjectidx+1+len){
 						throw ParseError("Extra characters after '&' redirect file descriptor");
 					}
 				} catch(invalid_argument){
