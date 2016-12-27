@@ -6,10 +6,10 @@ using namespace std;
 
 
 Value::Value(const string &s)
-	:strval(s){}
+	:type(Type::string),strval(s){}
 
 Value::Value(const Block &bl)
-	:funval(bl){}
+	:type(Type::function),funval(bl){}
 
 
 Maybe<string> Varstore::getstring(const string &name){
