@@ -9,6 +9,6 @@
 using namespace std;
 
 
-using Builtin = function<i64(const vector<string>&)>;
+using Builtin = function<i64(const vector<string>&,const unordered_map<int,int>&)>;
 
 extern const unordered_map<string,Builtin> builtins;
