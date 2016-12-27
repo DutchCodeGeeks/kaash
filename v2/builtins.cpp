@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <pwd.h>
 #include <cstdlib>
+#include <cstring>
 #include <sys/types.h>
 #include <unistd.h>
 #include "builtins.h"

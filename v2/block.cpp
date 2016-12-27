@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 #include <cassert>
 #include "block.h"
 #include "util.h"
